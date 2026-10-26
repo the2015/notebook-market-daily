@@ -21,18 +21,14 @@ concurrency:
 jobs:
   report:
     # 必须用 ubuntu：Windows runner 单价是 Linux 的 5 倍，macOS 高 30 倍
+    # larger runner 对公开仓库同样计费，禁止使用
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 计费防护：单次运行最长 5 分钟即强制终止，避免异常情况下一路烧额度
+    timeout-minutes: 5
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install deps
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq jq >/dev/null
-          python3 --version
 
       - name: Collect market data
         env:
@@ -51,4 +47,4 @@ jobs:
         with:
           name: notebook-report
           path: out/report.md
-          retention-days: 7
+          retention-days: 3
