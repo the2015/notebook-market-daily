@@ -1,0 +1,54 @@
+name: notebook-market-daily
+
+on:
+  schedule:
+    # 每天 01:10 UTC（北京时间 09:10）；避开整点，减少高负载排队被丢弃的概率
+    - cron: "10 1 * * *"
+  workflow_dispatch:
+    inputs:
+      jd_sku_ids:
+        description: "可选：京东 SKU ID，逗号分隔，如 100012043978,100015889346"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: notebook-market-daily
+  cancel-in-progress: true
+
+jobs:
+  report:
+    # 必须用 ubuntu：Windows runner 单价是 Linux 的 5 倍，macOS 高 30 倍
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq jq >/dev/null
+          python3 --version
+
+      - name: Collect market data
+        env:
+          JD_SKU_IDS: ${{ inputs.jd_sku_ids }}
+        run: bash scripts/collect.sh
+
+      - name: Notify WeChat
+        env:
+          SCT_KEY: ${{ secrets.SCT_KEY }}
+          WEWORK_WEBHOOK: ${{ secrets.WEWORK_WEBHOOK }}
+          REPORT: out/report.md
+        run: bash scripts/notify.sh
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: notebook-report
+          path: out/report.md
+          retention-days: 7
