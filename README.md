@@ -2,6 +2,12 @@
 
 用 GitHub Actions 每天自动汇总笔记本/PC 行情资讯，并推送到微信。零成本方案，不依赖任何付费 API。
 
+## 设计说明
+
+这套方案使用 GitHub Actions、RSS、关键词过滤和可选通知通道生成笔记本行情日报。实现细节、Fork 后的 workflow 条件、降级路径和数据口径见[项目设计说明：GitHub Actions 每天推送笔记本行情](https://the2015.github.io/posts/notebook-market-daily?utm_source=github&utm_medium=readme&utm_campaign=blog-launch-2026-11&utm_content=notebook-daily)。
+
+相关专题：[自动化实践](https://the2015.github.io/topics/automation?utm_source=github&utm_medium=readme&utm_campaign=blog-launch-2026-11&utm_content=notebook-daily)。
+
 ## 数据源
 
 | 来源 | 内容 | 方式 |
